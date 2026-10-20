@@ -1,0 +1,66 @@
+# openspec/config.yaml
+schema: spec-driven
+
+context: |
+  Tech stack: Python pipeline + DuckDB (SQL transforms); gold = one JSON per chart; Apache ECharts front (framework TBD)
+  Sources: OpenF1 (2023+), Jolpica-F1 (1950+); phase 2 adds OpenDota as independent source module
+  Architecture: ETL layers raw (gzip, immutable, committed) -> transform -> quality (fail closed) -> gold JSON + manifest/status
+  Orchestration: GitHub Actions (weekly cron Mondays UTC, manual dispatch) -> GitHub Pages (static, front only reads)
+  Testing: pytest PLANNED (not installed yet); unit tests on recorded fixtures, no network
+  Style: none configured yet (ruff/mypy/black not installed)
+  Requirements: docs/requerimientos-etl-f1.md (v0.3). Language of docs: Spanish. Data license CC BY-NC-SA 4.0
+
+# Strict TDD is the user's stated intent (RNF-05) but NO test runner exists yet,
+# so per sdd-init rules it is false for now. Flip to true as soon as the pytest
+# bootstrap change lands (pyproject.toml with pytest, tests/ dir).
+strict_tdd: false
+strict_tdd_intent: true
+
+testing:
+  status: NOT_INSTALLED   # planned only; nothing exists yet
+  runner:
+    framework: pytest (planned)
+    command: "pytest"     # planned, not runnable yet
+  layers:
+    unit: { available: false, tool: "pytest (planned)" }
+    integration: { available: false, tool: "pytest + fixtures of recorded responses (planned)" }
+    e2e: { available: false, tool: "-" }
+  coverage: { available: false, command: "pytest --cov (planned, needs pytest-cov)" }
+  quality:
+    linter: { available: false, command: "ruff check (candidate)" }
+    type_checker: { available: false, command: "mypy (candidate)" }
+    formatter: { available: false, command: "ruff format (candidate)" }
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+    - Identify affected modules/packages
+    - Reference the requirement IDs (RF-*, RNF-*, LEG-*, VIZ-*) the change covers
+  specs:
+    - Use Given/When/Then format for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+    - Trace each requirement to RF/RNF IDs in docs/requerimientos-etl-f1.md
+  design:
+    - Include sequence diagrams for complex flows
+    - Document architecture decisions with rationale
+    - Keep sources as independent modules over a common base (RNF-07)
+  tasks:
+    - Group tasks by phase (infrastructure, implementation, testing)
+    - Use hierarchical numbering (1.1, 1.2, etc.)
+    - Keep tasks small enough to complete in one session
+    - First change MUST bootstrap pytest + pyproject.toml so strict_tdd can be enabled
+  apply:
+    - Follow existing code patterns and conventions
+    - Load relevant coding skills for the project stack
+    - Unit tests MUST NOT hit the network; use recorded fixtures
+    - Pin dependency versions (RNF-04)
+    tdd: false            # becomes true once pytest is installed
+    test_command: "pytest"  # planned
+  verify:
+    - Run tests if test infrastructure exists
+    - Compare implementation against every spec scenario
+    test_command: "pytest"  # planned
+    build_command: ""
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas (large removals)
